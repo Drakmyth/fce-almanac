@@ -1,0 +1,8 @@
+# Go
+bin/
+*.exe
+*.log
+
+# VSCode
+.vscode/
+!.vscode/launch.json

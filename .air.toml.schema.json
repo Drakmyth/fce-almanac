@@ -1,0 +1,228 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "root": {
+      "type": "string",
+      "description": "Working directory. \".\" or absolute path, please note that the directories following must be under root.",
+      "default": "."
+    },
+    "tmp_dir": {
+      "type": "string",
+      "default": "tmp"
+    },
+    "build": {
+      "type": "object",
+      "properties": {
+        "pre_cmd": {
+          "type": "array",
+          "description": "Array of commands to run before each build",
+          "default": ["echo 'hello air' > pre_cmd.txt"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "cmd": {
+          "type": "string",
+          "description": "Just plain old shell command. You could use `make` as well.",
+          "default": "go build -o ./tmp/main ."
+        },
+        "post_cmd": {
+          "type": "array",
+          "description": "Array of commands to run after ^C",
+          "default": ["echo 'hello air' > post_cmd.txt"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "bin": {
+          "type": "string",
+          "description": "Binary file yields from `cmd`.",
+          "default": "tmp/main"
+        },
+        "full_bin": {
+          "type": "string",
+          "description": "Customize binary, can setup environment variables when run your app.",
+          "default": "APP_ENV=dev APP_USER=air ./tmp/main"
+        },
+        "include_ext": {
+          "type": "array",
+          "description": "Watch these filename extensions.",
+          "default": ["go", "tpl", "tmpl", "html"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_dir": {
+          "type": "array",
+          "description": "Ignore these filename extensions or directories.",
+          "default": ["assets", "tmp", "vendor", "frontend/node_modules"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_dir": {
+          "type": "array",
+          "description": "Watch these directories if you specified.",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "include_file": {
+          "type": "array",
+          "description": "Watch these files.",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_file": {
+          "type": "array",
+          "description": "Exclude files.",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_regex": {
+          "type": "array",
+          "description": "Exclude specific regular expressions.",
+          "default": [],
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude_unchanged": {
+          "type": "boolean",
+          "description": "Exclude unchanged files.",
+          "default": true
+        },
+        "follow_symlink": {
+          "type": "boolean",
+          "description": "Follow symlink for directories",
+          "default": true
+        },
+        "log": {
+          "type": "string",
+          "description": "This log file places in your tmp_dir.",
+          "default": "air.log"
+        },
+        "poll": {
+          "type": "boolean",
+          "description": "Poll files for changes instead of using fsnotify.",
+          "default": false
+        },
+        "poll_interval": {
+          "type": "number",
+          "description": "Poll interval (defaults to the minimum interval of 500ms).",
+          "default": 500
+        },
+        "delay": {
+          "type": "number",
+          "description": "It's not necessary to trigger build each time file changes if it's too frequent.",
+          "default": 0
+        },
+        "stop_on_error": {
+          "type": "boolean",
+          "description": "Stop running old binary when build errors occur.",
+          "default": true
+        },
+        "send_interrupt": {
+          "type": "boolean",
+          "description": "Send Interrupt signal before killing process (windows does not support this feature)",
+          "default": false
+        },
+        "kill_delay": {
+          "type": "number",
+          "description": "Delay after sending Interrupt signal",
+          "default": 500
+        },
+        "rerun": {
+          "type": "boolean",
+          "description": "Rerun binary or not",
+          "default": false
+        },
+        "rerun_delay": {
+          "type": "number",
+          "description": "Delay after each executions",
+          "default": 500
+        },
+        "args_bin": {
+          "type": "array",
+          "description": "Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.",
+          "default": ["hello", "world"],
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": []
+    },
+    "log": {
+      "type": "object",
+      "properties": {
+        "time": {
+          "type": "boolean",
+          "description": "Show log time",
+          "default": false
+        },
+        "main_only": {
+          "type": "boolean",
+          "description": "Only show main log (silences watcher, build, runner)",
+          "default": false
+        }
+      },
+      "required": []
+    },
+    "color": {
+      "type": "object",
+      "description": "Customize each part's color. If no color found, use the raw app log.",
+      "properties": {
+        "main": {
+          "type": "string",
+          "default": "magenta"
+        },
+        "watcher": {
+          "type": "string",
+          "default": "cyan"
+        },
+        "build": {
+          "type": "string",
+          "default": "yellow"
+        },
+        "runner": {
+          "type": "string",
+          "default": "green"
+        }
+      },
+      "required": []
+    },
+    "misc": {
+      "type": "object",
+      "properties": {
+        "clean_on_exit": {
+          "type": "boolean",
+          "description": "Delete tmp directory on exit",
+          "default": true
+        }
+      },
+      "required": []
+    },
+    "screen": {
+      "type": "object",
+      "properties": {
+        "clear_on_rebuild": {
+          "type": "boolean",
+          "default": true
+        },
+        "keep_scroll": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": []
+    }
+  },
+  "required": []
+}
