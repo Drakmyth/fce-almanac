@@ -6,3 +6,6 @@ bin/
 # VSCode
 .vscode/
 !.vscode/launch.json
+
+# Keeping the game data in the repo simplifies referencing it, but it's not ours so don't commit it
+FCE_Data/
