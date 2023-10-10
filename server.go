@@ -149,6 +149,9 @@ func initdb(ctx context.Context, args []string) error {
 				log.Fatal(err)
 				os.Exit(1)
 			}
+			for _, researchDataEntry := range dataObj.ResearchDataEntries {
+				researchDataEntry.ResearchRequirements = append(researchDataEntry.ResearchRequirements, researchDataEntry.MoreResearchRequirements...)
+			}
 			researchDataEntries = dataObj.ResearchDataEntries
 		case "TerrainData.xml":
 			dataObj := &TerrainDataEntryDocument{}
@@ -168,8 +171,9 @@ func initdb(ctx context.Context, args []string) error {
 			}
 			for _, craftData := range dataObj.Data {
 				craftData.Machine = machine
-				craftDataRecords = append(craftDataRecords, craftData)
+				craftData.ScanRequirements = append(craftData.ScanRequirements, craftData.MoreScanRequirements...)
 			}
+			craftDataRecords = append(craftDataRecords, dataObj.Data...)
 		}
 	}
 
