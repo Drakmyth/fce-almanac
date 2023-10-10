@@ -1,4 +1,0 @@
-/* Tailwind v2 doesn't support flex-basis, so we do it ourselves */
-.basis-1\/4 {
-    flex-basis: 25%
-}
