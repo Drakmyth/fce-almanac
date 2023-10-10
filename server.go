@@ -85,17 +85,19 @@ func initdb(ctx context.Context, args []string) error {
 
 	dataPath := filepath.Join(path, "Default/Data")
 	gacPath := filepath.Join(dataPath, "GenericAutoCrafter")
+	// TODO: Parse Default/Lang files
+	// TODO: Maybe parse Default/Handbook
 
 	dataFiles := getFileDirEntries(dataPath)
 	gacFiles := getFileDirEntries(gacPath)
 
-	genericAutoCrafterDataEntries := []GenericAutoCrafterDataEntry{}
 	var (
-		craftDataRecords    []CraftData
-		itemEntries         []ItemEntry
-		recipeSets          []RecipeSet
-		researchDataEntries []ResearchDataEntry
-		terrainDataEntries  []TerrainDataEntry
+		genericAutoCrafterDataEntries []GenericAutoCrafterDataEntry
+		craftDataRecords              []CraftData
+		itemEntries                   []ItemEntry
+		recipeSets                    []RecipeSet
+		researchDataEntries           []ResearchDataEntry
+		terrainDataEntries            []TerrainDataEntry
 	)
 
 	for _, fileEntry := range gacFiles {
