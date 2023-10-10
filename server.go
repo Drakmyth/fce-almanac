@@ -73,7 +73,7 @@ func initdb(ctx context.Context, args []string) error {
 	found_exe := slices.ContainsFunc(exe_names, func(s string) bool {
 		path2 := filepath.Join(path, s)
 		if verbose {
-			fmt.Fprintf(os.Stdout, "Checking for exe: %s\n", path2)
+			fmt.Printf("Checking for exe: %s\n", path2)
 		}
 		_, err := os.Stat(path2)
 		return !errors.Is(err, fs.ErrNotExist)
@@ -178,12 +178,12 @@ func initdb(ctx context.Context, args []string) error {
 	}
 
 	fmt.Println()
-	fmt.Fprintf(os.Stdout, "Generic Auto Crafter Data Entries: %d\n", len(genericAutoCrafterDataEntries))
-	fmt.Fprintf(os.Stdout, "CraftData Records: %d\n", len(craftDataRecords))
-	fmt.Fprintf(os.Stdout, "Item Entries: %d\n", len(itemEntries))
-	fmt.Fprintf(os.Stdout, "Recipe Sets: %d\n", len(recipeSets))
-	fmt.Fprintf(os.Stdout, "Research Data Entries: %d\n", len(researchDataEntries))
-	fmt.Fprintf(os.Stdout, "Terrain Data Entries: %d\n", len(terrainDataEntries))
+	fmt.Printf("Generic Auto Crafter Data Entries: %d\n", len(genericAutoCrafterDataEntries))
+	fmt.Printf("CraftData Records: %d\n", len(craftDataRecords))
+	fmt.Printf("Item Entries: %d\n", len(itemEntries))
+	fmt.Printf("Recipe Sets: %d\n", len(recipeSets))
+	fmt.Printf("Research Data Entries: %d\n", len(researchDataEntries))
+	fmt.Printf("Terrain Data Entries: %d\n", len(terrainDataEntries))
 
 	return nil
 }
@@ -193,7 +193,7 @@ func runserver(ctx context.Context, args []string) error {
 	tmpl, _ = template.ParseGlob("./templates/*.tmpl.html")
 
 	mux.Handle("/", http.FileServer(http.Dir("public")))
-	fmt.Fprintf(os.Stdout, "Applicaton listening on port %d...\n", port)
+	fmt.Printf("Applicaton listening on port %d...\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	log.Fatal(err)
 	return err
