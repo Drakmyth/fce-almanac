@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" hidden>
     <head>
-        <title>Handbook</title>
+        {{ template "html-head.tmpl.html" }}
+        <title>FCE Almanac - Handbook</title>
     </head>
-    <body>
+
+    <body class="flex flex-row h-screen bg-gray-800">
         {{ template "sidebar.tmpl.html" . }}
         This is the handbook.
     </body>
