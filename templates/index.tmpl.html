@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Document</title>
+        <title>FCE Almanac</title>
         <script
             src="https://unpkg.com/htmx.org@1.9.4"
             integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV"
@@ -15,12 +15,9 @@
             integrity="sha384-XzLjzijoD4DIlP3xyn7CbA0E9FfYGmT5YyrV1Hqz6qNUYZTFp9wByh5/WtLvqppG"
             crossorigin="anonymous"
         ></script>
-        <link rel="stylesheet" href="./styles.css" />
     </head>
 
-    <body class="flex flex-col h-screen">
-        <div id="page-header" class="h-24 p-8 bg-gray-300">
-            <span class="text-4xl font-bold">fce-almanac</span>
-        </div>
+    <body class="flex flex-row h-screen bg-gray-800" hidden>
+        {{ template "sidebar.tmpl.html" . }}
     </body>
 </html>

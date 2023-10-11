@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
 	"log"
 	"net/http"
@@ -19,7 +20,6 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-var tmpl *template.Template = nil
 var config string = ""
 var verbose bool = false
 var port int = 8000
@@ -88,8 +88,15 @@ func initdb(ctx context.Context, args []string) error {
 	// TODO: Parse Default/Lang files
 	// TODO: Maybe parse Default/Handbook
 
-	dataFiles := getFileDirEntries(dataPath)
-	gacFiles := getFileDirEntries(gacPath)
+	dataFiles, err := getFileDirEntries(dataPath)
+	if err != nil {
+		return err
+	}
+
+	gacFiles, err := getFileDirEntries(gacPath)
+	if err != nil {
+		return err
+	}
 
 	var (
 		genericAutoCrafterDataEntries []GenericAutoCrafterDataEntry
@@ -105,15 +112,13 @@ func initdb(ctx context.Context, args []string) error {
 		xmlFilePath := filepath.Join(gacPath, fileEntry.Name())
 		data, err := os.ReadFile(xmlFilePath)
 		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
+			return err
 		}
 
 		dataObj := &GenericAutoCrafterDataEntry{}
 		err = xml.Unmarshal([]byte(data), &dataObj)
 		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
+			return err
 		}
 		genericAutoCrafterDataEntries = append(genericAutoCrafterDataEntries, *dataObj)
 	}
@@ -123,8 +128,7 @@ func initdb(ctx context.Context, args []string) error {
 		xmlFilePath := filepath.Join(dataPath, fileEntry.Name())
 		data, err := os.ReadFile(xmlFilePath)
 		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
+			return err
 		}
 
 		switch fileEntry.Name() {
@@ -132,24 +136,21 @@ func initdb(ctx context.Context, args []string) error {
 			dataObj := &ItemEntryDocument{}
 			err = xml.Unmarshal([]byte(data), &dataObj)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
+				return err
 			}
 			itemEntries = dataObj.ItemEntries
 		case "RecipeSets.xml":
 			dataObj := &RecipeSetDocument{}
 			err = xml.Unmarshal([]byte(data), &dataObj)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
+				return err
 			}
 			recipeSets = dataObj.RecipeSets
 		case "Research.xml":
 			dataObj := &ResearchDataEntryDocument{}
 			err = xml.Unmarshal([]byte(data), &dataObj)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
+				return err
 			}
 			for _, researchDataEntry := range dataObj.ResearchDataEntries {
 				researchDataEntry.ResearchRequirements = append(researchDataEntry.ResearchRequirements, researchDataEntry.MoreResearchRequirements...)
@@ -159,8 +160,7 @@ func initdb(ctx context.Context, args []string) error {
 			dataObj := &TerrainDataEntryDocument{}
 			err = xml.Unmarshal([]byte(data), &dataObj)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
+				return err
 			}
 			terrainDataEntries = dataObj.TerrainDataEntries
 		default:
@@ -168,8 +168,7 @@ func initdb(ctx context.Context, args []string) error {
 			dataObj := &CraftDataDocument{}
 			err = xml.Unmarshal([]byte(data), &dataObj)
 			if err != nil {
-				log.Fatal(err)
-				os.Exit(1)
+				return err
 			}
 			for _, craftData := range dataObj.Data {
 				craftData.Machine = machine
@@ -192,20 +191,31 @@ func initdb(ctx context.Context, args []string) error {
 
 func runserver(ctx context.Context, args []string) error {
 	mux := muxpatterns.NewServeMux()
-	tmpl, _ = template.ParseGlob("./templates/*.tmpl.html")
 
-	mux.Handle("/", http.FileServer(http.Dir("public")))
+	// TODO: Separate partial endpoints into dedicated muxes. Example:
+	// handbookMux := muxpatterns.NewServeMux()
+	// handbookMux.HandleFunc("GET /{taskId}", getHandbook)
+	// handbookMux.HandleFunc("DELETE /{taskId}", deleteHandbook)
+	// handbookMux.HandleFunc("GET /{taskId}/edit", getEditHandbook)
+	// handbookMux.HandleFunc("POST /", createHandbook)
+	// handbookMux.HandleFunc("GET /{$}", getTaskHandbook)
+	// mux.Handle("/handbook/", http.StripPrefix("/handbook", handbookMux))
+
+	mux.HandleFunc("/handbook", getHandbook)
+	mux.HandleFunc("/", getIndex)
 	fmt.Printf("Applicaton listening on port %d...\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
-	log.Fatal(err)
-	return err
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func getFileDirEntries(path string) []fs.DirEntry {
+func getFileDirEntries(path string) ([]fs.DirEntry, error) {
 	dirEntries, err := os.ReadDir(path)
 	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	files := []fs.DirEntry{}
@@ -215,5 +225,31 @@ func getFileDirEntries(path string) []fs.DirEntry {
 		}
 	}
 
-	return files
+	return files, nil
+}
+
+func getHandbook(w http.ResponseWriter, r *http.Request) {
+	err := executeTemplate(w, "./templates/handbook.tmpl.html", nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func getIndex(w http.ResponseWriter, r *http.Request) {
+	err := executeTemplate(w, "./templates/index.tmpl.html", nil)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func executeTemplate(wr io.Writer, path string, data any) error {
+	templatePaths, _ := filepath.Glob("./templates/partials/*.tmpl.html")
+	templatePaths = append(templatePaths, path)
+
+	tmpl, err := template.ParseFiles(templatePaths...)
+	if err != nil {
+		return err
+	}
+
+	return tmpl.ExecuteTemplate(wr, filepath.Base(path), data)
 }
