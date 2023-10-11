@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/fs"
 	"log"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -201,8 +202,15 @@ func runserver(ctx context.Context, args []string) error {
 	// handbookMux.HandleFunc("GET /{$}", getTaskHandbook)
 	// mux.Handle("/handbook/", http.StripPrefix("/handbook", handbookMux))
 
-	mux.HandleFunc("/handbook", getHandbook)
+	mux.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("./assets/"))))
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./assets/favicon.ico")
+	})
+	mime.AddExtensionType(".webmanifest", "application/manifest+json; charset=utf-8")
+
 	mux.HandleFunc("/", getIndex)
+	mux.HandleFunc("/handbook", getHandbook)
+
 	fmt.Printf("Applicaton listening on port %d...\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
