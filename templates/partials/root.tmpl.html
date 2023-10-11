@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-us" hidden>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+        <link rel="manifest" href="/assets/site.webmanifest">
+        <script
+            src="https://unpkg.com/htmx.org@1.9.4"
+            integrity="sha384-zUfuhFKKZCbHTY6aRR46gxiqszMk5tcHjsVFxnUo8VMus4kHGVdIYVbOYYNlKmHV"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.skypack.dev/twind/shim"
+            type="module"
+            integrity="sha384-XzLjzijoD4DIlP3xyn7CbA0E9FfYGmT5YyrV1Hqz6qNUYZTFp9wByh5/WtLvqppG"
+            crossorigin="anonymous"
+        ></script>
+        {{ block "head" . }}{{ end }}
+    </head>
+
+    <body class="flex flex-row h-screen bg-gray-800 text-white">
+        <div id="page-sidebar" class="flex flex-col gap-4 w-48 p-8 bg-gray-700">
+            <a href="/" class="text-4xl font-bold">fce-almanac</a>
+            <select class="text-black">
+                <option>English</option>
+                <option>Chinese (Simplified)</option>
+                <option>Czech</option>
+                <option>Dutch</option>
+                <option>Finnish</option>
+                <option>French</option>
+                <option>German</option>
+                <option>Italian</option>
+                <option>Korean</option>
+                <option>Norwegian Nynorsk</option>
+                <option>Polish</option>
+                <option>Portuguese (Brazil)</option>
+                <option>Russian</option>
+                <option>Spanish</option>
+                <option>Swedish</option>
+                <option>Turkish</option>
+                <option>Ukrainian</option>
+            </select>
+            <ul hx-boost="true">
+                <li><a href="/handbook">Handbook</a></li>
+                <li><a href="/techtree">Tech Tree</a></li>
+                <li><a href="/items">Items</a></li>
+                <li><a href="/machines">Machines</a></li>
+                <li><a href="/upgrades">Upgrades</a></li>
+            </ul>
+        </div>
+        <div id="page-content">
+            {{ block "body" . }}{{end}}
+        </div>
+    </body>
+</html>

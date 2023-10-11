@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en-us" hidden>
-    <head>
-        {{ template "html-head.tmpl.html" }}
-        <title>FCE Almanac - Handbook</title>
-    </head>
+{{ template "root.tmpl.html" . }}
 
-    <body class="flex flex-row h-screen bg-gray-800">
-        {{ template "sidebar.tmpl.html" . }}
-        This is the handbook.
-    </body>
-</html>
+{{ define "head" }}
+    <title>FCE Almanac - Handbook</title>
+{{ end }}
+
+{{ define "body" }}
+    This is the handbook.
+{{ end }}
